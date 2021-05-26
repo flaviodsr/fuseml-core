@@ -1,13 +1,15 @@
-name: Release-pipeline
+name: Release
 
 on:
   push:
-    tags:
-      - "v*"
+    tags: [ "v*" ]
+    branches: [ main ]
 
 jobs:
   source-and-binaries:
+    name: Source and binaries
     runs-on: ubuntu-latest
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -32,7 +34,17 @@ jobs:
         run: |
           make release
 
-      - name: Generate Changelog
+      - name: Release fuseml-core (dev)
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "dev"
+          prerelease: true
+          title: "Development Build"
+          files: ./bin/*
+
+      - name: Generate Changelog (official)
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +54,8 @@ jobs:
           issuesWoLabels: "true"
           stripHeaders: "true"
 
-      - name: Release fuseml-core
+      - name: Release fuseml-core (official)
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v1
         with:
           files: ./bin/*
@@ -52,6 +65,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   docker-iamge:
+    name: Docker image
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -80,7 +94,18 @@ jobs:
 
       - name: Set image name and tag
         run: |
-          echo "IMG=ghcr.io/${GITHUB_REPOSITORY}:${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+          case "${GITHUB_REF}" in
+            refs/heads/main)
+              TAG="dev"
+              ;;
+            refs/tags/v*)
+              TAG=${GITHUB_REF/refs\/tags\//}
+              ;;
+            *)
+              TAG=${GITHUB_REF/refs\/*\//}
+              ;;
+          esac
+          echo "IMG=ghcr.io/${GITHUB_REPOSITORY}:${TAG}" >> $GITHUB_ENV
          
       - name: Build image
         run: |
