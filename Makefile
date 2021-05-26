@@ -25,7 +25,7 @@ fuseml: generate lint build
 # Generate code, run linter, build FuseML release-ready archived binaries for all supported ARCHs and OSs
 release: test release_all
 
-build: build_server build_client
+build: generate build_server build_client
 
 build_server:
 	go build ${GO_LDFLAGS} -o bin/fuseml_core ./cmd/fuseml_core
