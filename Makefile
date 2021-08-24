@@ -43,7 +43,7 @@ all: fuseml
 
 # Run tests
 test: generate lint
-	go test ./... -coverprofile cover.out
+	go test ./... -coverprofile cover.out -covermode=atomic
 
 # Generate code, run linter and build FuseML binaries
 fuseml: generate lint build
@@ -102,7 +102,7 @@ runcli: generate lint
 generate:
 	go mod download
 	go run goa.design/goa/v3/cmd/goa gen github.com/fuseml/fuseml-core/design
-	go get github.com/google/wire/cmd/wire@v0.5.0
+	go get -d github.com/google/wire/cmd/wire@v0.5.0
 	go generate cmd/fuseml_core/wire_gen.go
 
 # Lint code

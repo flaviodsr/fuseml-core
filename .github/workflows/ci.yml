@@ -21,7 +21,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '^1.16'
+          go-version: '^1.17'
           
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
@@ -41,3 +41,11 @@ jobs:
       - name: Run "${{ matrix.target }}"
         run: |
           make generate ${{ matrix.target }}
+
+      - name: Upload coverage to Codecov
+        if: matrix.target == 'test'
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./cover.out
+          flags: unittests
+          name: codecov-umbrella
