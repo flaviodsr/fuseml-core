@@ -24,9 +24,10 @@ require (
 	github.com/tektoncd/pipeline v0.26.0
 	github.com/tektoncd/triggers v0.15.0
 	github.com/thediveo/enumflag v0.10.1
-	goa.design/goa/v3 v3.3.1
-	google.golang.org/grpc v1.37.0
-	google.golang.org/protobuf v1.26.0
+	goa.design/goa/v3 v3.4.3
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
+	google.golang.org/grpc v1.38.0
+	google.golang.org/protobuf v1.27.1
 	k8s.io/api v0.20.7
 	k8s.io/apimachinery v0.20.7
 	k8s.io/client-go v0.20.7
